@@ -11,6 +11,7 @@
 #
 # For brevity, Cardinal Richleau's men are referred to as "enemy".
 # 'pass' is a no-nothing Python statement. Replace it with actual code.
+POSSIBLE_CHARACTERS = ["A", "B", "C", "D", "E"]
 
 def create_board():
     global board
@@ -40,16 +41,28 @@ def string_to_location(s):
        location as a 2-tuple (such as (0, 4)).
        The function should raise ValueError exception if the input
        is outside of the correct range (between 'A' and 'E' for s[0] and
-       between '1' and '5' for s[1]
-       """
-    pass # Replace with code
+       between '1' and '5' for s[1]"""
+
+    n = list(s)
+    poss_char = ["A", "B", "C", "D", "E"]
+    if int(n[1]) - 1 > 4 or int(n[1]) - 1 < 0:
+        return ValueError
+
+    else:
+        return POSSIBLE_CHARACTERS.index(n[0]), int(n[1]) - 1
 
 def location_to_string(location):
     """Returns the string representation of a location.
     Similarly to the previous function, this function should raise
     ValueError exception if the input is outside of the correct range
     """
-    pass # Replace with code
+    g = ["", ""]
+    g[0] = POSSIBLE_CHARACTERS[location[0]]
+    g[1] = location[1] + 1
+    if int(g[1]) > 5 or int(g[1]) < 1:
+        return ValueError
+    else:
+        return str(g[0]) + str(g[1])
 
 def at(location):
     """Returns the contents of the board at the given location.
@@ -58,20 +71,42 @@ def at(location):
 
 def all_locations():
     """Returns a list of all 25 locations on the board."""
-    pass # Replace with code
+    l = []
+    for i in range(5):
+        for j in range(5):
+            l.append((i, j))
+        return l
 
 def adjacent_location(location, direction):
     """Return the location next to the given one, in the given direction.
        Does not check if the location returned is legal on a 5x5 board.
        You can assume that input will always be in correct range."""
     (row, column) = location
-    pass # Replace with code
+    if direction == "left":
+        column -= 1
+    elif direction == "right":
+        column += 1
+    elif direction == "up":
+        row -= 1
+    elif direction == "down":
+        row += 1
+    return row, column
+
 
 def is_legal_move_by_musketeer(location, direction):
     """Tests if the Musketeer at the location can move in the direction.
     You can assume that input will always be in correct range. Raises
     ValueError exception if at(location) is not 'M'"""
-    pass # Replace with code
+    (row, column) = location
+
+    if board[row][column] != 'M':
+        return ValueError
+    (row, column) = adjacent_location(location, direction)
+
+    if board[row][column] == '-' or board[row][column] == 'M':
+        return False
+    elif board[row][column] == 'R':
+        return True
 
 def is_legal_move_by_enemy(location, direction):
     """Tests if the enemy at the location can move in the direction.
