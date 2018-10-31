@@ -70,7 +70,15 @@ def test_all_locations():
                                 (4, 0), (4, 1), (4, 2), (4, 3), (4, 4)]
 
 def test_adjacent_location():
-    # Replace with tests
+    with pytest.raises(ValueError):
+        for i in range(5):
+            adjacent_location((0, i), 'right') != [0, i + 1]
+    with pytest.raises(ValueError):
+        for i in range(5):
+            adjacent_location((i, 0), 'down') != [i + 1, 0]
+
+
+
 
 def test_is_legal_move_by_musketeer():
     # Replace with tests

@@ -21,6 +21,7 @@ def create_board():
        Cardinal Richleau's men, and '-' denotes an empty space."""
     m = 'M'
     r = 'R'
+    _ = '-'
     board = [ [r, r, r, r, m],
               [r, r, r, r, r],
               [r, r, m, r, r],
@@ -90,41 +91,82 @@ def adjacent_location(location, direction):
         row -= 1
     elif direction == "down":
         row += 1
-    return row, column
+    return [row, column]
 
 
 def is_legal_move_by_musketeer(location, direction):
     """Tests if the Musketeer at the location can move in the direction.
     You can assume that input will always be in correct range. Raises
     ValueError exception if at(location) is not 'M'"""
+
     (row, column) = location
 
-    if board[row][column] != 'M':
+    if at([row, column]) != 'M':
         return ValueError
-    (row, column) = adjacent_location(location, direction)
+    (row, column) = adjacent_location(location, direction)[0], adjacent_location(location, direction)[1]
 
-    if board[row][column] == '-' or board[row][column] == 'M':
+    if at([row, column]) == '-' or at([row, column]) == 'M':
         return False
-    elif board[row][column] == 'R':
+    elif at([row, column]) == 'R':
         return True
 
 def is_legal_move_by_enemy(location, direction):
     """Tests if the enemy at the location can move in the direction.
     You can assume that input will always be in correct range. Raises
     ValueError exception if at(location) is not 'R'"""
-    pass # Replace with code
+    (row, column) = location
+
+    if at([row, column]) != 'R':
+        return ValueError
+    (row, column) = adjacent_location(location, direction)[0], adjacent_location(location, direction)[1]
+
+    if at([row, column]) == 'M' or at([row, column]) == 'R':
+        return False
+    elif at([row, column]) == '-':
+        return True
 
 def is_legal_move(location, direction):
     """Tests whether it is legal to move the piece at the location
     in the given direction.
     You can assume that input will always be in correct range."""
-    pass # Replace with code
+    (row, column) = location
+    g = adjacent_location(location, direction)
+    if g[0] < 0 or g[0] > 4:
+        return False
+    elif g[1] < 0 or g[1] > 4:
+        return False
+    else:
+        return True
 
 def can_move_piece_at(location):
     """Tests whether the player at the location has at least one move available.
-    You can assume that input will always be in correct range.
     You can assume that input will always be in correct range."""
-    pass # Replace with code
+    (row, column) = location
+    z = []
+    if is_legal_move(location, 'left'):
+        Left = adjacent_location(location, 'left')
+        z.append(Left)
+    if is_legal_move(location, 'right'):
+        Right = adjacent_location(location, 'right')
+        z.append(Right)
+    if is_legal_move(location, 'up'):
+        Up = adjacent_location(location, 'up')
+        z.append(Up)
+    if is_legal_move(location, 'down'):
+        Down = adjacent_location(location, 'down')
+        z.append(Down)
+
+
+    for element in z:
+
+        if at(element) == _  and at(location) == r:
+            return True
+
+        elif at(element) == r  and at(location) == m:
+            return True
+
+
+    return False
 
 
 def has_some_legal_move_somewhere(who):
