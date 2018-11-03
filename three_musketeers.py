@@ -187,13 +187,28 @@ def is_legal_location(location):
     """ Tests if the location is legal on a 5x5 board.
 
         You can assume that input will be a pair of integer numbers."""
-    pass # Replace with code
+     # Replace with code
+    row, column = location
+    if row < 0 or row > 4:
+        return False
+    elif column < 0 or column > 4:
+        return False
+
+    else:
+        return True
 
 def is_within_board(location, direction):
     """Tests if the move stays within the boundaries of the board.
     You can assume that input will always be in correct range."""
-    pass # Replace with code
 
+    (row, column) = location
+    g = adjacent_location(location, direction)
+    if g[0] < 0 or g[0] > 4:
+        return False
+    elif g[1] < 0 or g[1] > 4:
+        return False
+    else:
+        return True
 def all_possible_moves_for(player):
     """Returns every possible move for the player ('M' or 'R') as a list
        (location, direction) tuples.
