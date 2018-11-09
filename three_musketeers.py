@@ -129,14 +129,25 @@ def is_legal_move(location, direction):
     """Tests whether it is legal to move the piece at the location
     in the given direction.
     You can assume that input will always be in correct range."""
+#    (row, column) = location
+#    g = adjacent_location(location, direction)
+#    if g[0] < 0 or g[0] > 4:
+#        return False
+#    elif g[1] < 0 or g[1] > 4:
+#        return False
+    #else:
+    #    return True
     (row, column) = location
-    g = adjacent_location(location, direction)
-    if g[0] < 0 or g[0] > 4:
-        return False
-    elif g[1] < 0 or g[1] > 4:
-        return False
-    else:
-        return True
+    if at(location) == 'M':
+
+        if is_legal_move_by_musketeer(location, direction):
+            return True
+    if at(location) == 'R':
+        if is_legal_move_by_enemy(location, direction):
+            return True
+    return False
+
+
 
 def can_move_piece_at(location):
     """Tests whether the player at the location has at least one move available.
@@ -175,13 +186,31 @@ def has_some_legal_move_somewhere(who):
     the legal move is.
     You can assume that input will always be in correct range."""
     pass # Replace with code
+    L = all_locations()
+
+    for location in L:
+        if at(location) == who and can_move_piece_at(location):
+            return True
 
 def possible_moves_from(location):
     """Returns a list of directions ('left', etc.) in which it is legal
        for the player at location to move. If there is no player at
        location, returns the empty list, [].
        You can assume that input will always be in correct range."""
-    pass # Replace with code
+    #pass # Replace with code
+    possible_moves = []
+    if is_legal_move(location, 'left'):
+        possible_moves.append('left')
+    if is_legal_move(location, 'right'):
+        possible_moves.append('right')
+    if is_legal_move(location, 'up'):
+        possible_moves.append('up')
+    if is_legal_move(location, 'down'):
+        possible_moves.append('down')
+
+
+    return possible_moves
+
 
 def is_legal_location(location):
     """ Tests if the location is legal on a 5x5 board.
@@ -213,8 +242,26 @@ def all_possible_moves_for(player):
     """Returns every possible move for the player ('M' or 'R') as a list
        (location, direction) tuples.
        You can assume that input will always be in correct range."""
-    pass # Replace with code
+    L = all_locations()
 
+    for location in L:
+        if at(location) == player:
+            locations.append(location)
+
+    locations = []
+    possible_moves = []
+    for location in locations:
+        if is_legal_move(location, 'left'):
+            possible_moves.append((location, direction))
+        if is_legal_move(location, 'right'):
+            possible_moves.append((location, direction))
+        if is_legal_move(location, 'up'):
+            possible_moves.append((location, direction))
+        if is_legal_move(location, 'down'):
+            possible_moves.append((location, direction))
+
+
+    return possible_moves
 def make_move(location, direction):
     """Moves the piece in location in the indicated direction.
     Doesn't check if the move is legal. You can assume that input will always
