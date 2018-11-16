@@ -78,6 +78,15 @@ def all_locations():
             l.append((i, j))
     return l
 
+def all_locations_for_m():
+    all_loc = all_locations()
+    m = []
+    for element in all_loc:
+        if at(element) == "M":
+            m.append(element)
+    return m
+
+
 
 
 
@@ -272,14 +281,13 @@ def all_possible_moves_for(player):
 
     for location in locations:
         if is_legal_move(location, 'left'):
-            possible_moves.append((adjacent_location(location, 'left'), 'left'))
+            possible_moves.append((location, 'left'))
         if is_legal_move(location, 'right'):
-            possible_moves.append((adjacent_location(location, 'right'), 'right'))
+            possible_moves.append((location, 'right'))
         if is_legal_move(location, 'up'):
-            possible_moves.append((adjacent_location(location, 'up'), 'up'))
+            possible_moves.append((location, 'up'))
         if is_legal_move(location, 'down'):
-            possible_moves.append((adjacent_location(location, 'down'), 'down'))
-
+            possible_moves.append((location, 'down'))
 
     return possible_moves
 
@@ -301,12 +309,22 @@ def choose_computer_move(who):
        enemy (who = 'R') and returns it as the tuple (location, direction),
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
-    pass # Replace with code
-    
+
+    poss_moves = all_possible_moves_for(who)
+
+    return random.choice(poss_moves)#[0]
+
 
 def is_enemy_win():
     """Returns True if all 3 Musketeers are in the same row or column."""
-    pass # Replace with code
+    m = all_locations_for_m()
+
+    if m[0][0] == m[1][0]:
+        if m[1][0] == m[2][0]:
+            return True
+    else:
+        return False
+
 
 #---------- Communicating with the user ----------
 #----you do not need to modify code below unless you find a bug
