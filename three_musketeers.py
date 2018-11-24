@@ -158,14 +158,7 @@ def is_legal_move(location, direction):
     """Tests whether it is legal to move the piece at the location
     in the given direction.
     You can assume that input will always be in correct range."""
-#    (row, column) = location
-#    g = adjacent_location(location, direction)
-#    if g[0] < 0 or g[0] > 4:
-#        return False
-#    elif g[1] < 0 or g[1] > 4:
-#        return False
-    #else:
-    #    return True
+
     (row, column) = location
     if at(location) == 'M':
 
@@ -196,7 +189,6 @@ def can_move_piece_at(location):
         Down = adjacent_location(location, 'down')
         z.append(Down)
 
-
     for element in z:
 
         if at(element) == '-'  and at(location) == 'R':
@@ -225,7 +217,6 @@ def possible_moves_from(location):
        for the player at location to move. If there is no player at
        location, returns the empty list, [].
        You can assume that input will always be in correct range."""
-    #pass # Replace with code
     possible_moves = []
     if is_legal_move(location, 'left'):
         possible_moves.append('left')
@@ -244,7 +235,6 @@ def is_legal_location(location):
     """ Tests if the location is legal on a 5x5 board.
 
         You can assume that input will be a pair of integer numbers."""
-     # Replace with code
     row, column = location
     if row < 0 or row > 4:
         return False
@@ -303,7 +293,6 @@ def make_move(location, direction):
     board[location[0]][location[1]] = '-'
 
 
-
 def choose_computer_move(who):
     """The computer chooses a move for a Musketeer (who = 'M') or an
        enemy (who = 'R') and returns it as the tuple (location, direction),
@@ -312,15 +301,17 @@ def choose_computer_move(who):
 
     poss_moves = all_possible_moves_for(who)
 
-    return random.choice(poss_moves)#[0]
+    return random.choice(poss_moves)
 
 
 def is_enemy_win():
     """Returns True if all 3 Musketeers are in the same row or column."""
     m = all_locations_for_m()
-
     if m[0][0] == m[1][0]:
         if m[1][0] == m[2][0]:
+            return True
+    elif m[0][1] == m[1][1]:
+        if m[1][1] == m[2][1]:
             return True
     else:
         return False

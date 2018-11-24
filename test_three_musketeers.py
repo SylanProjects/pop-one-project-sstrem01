@@ -136,11 +136,11 @@ def test_possible_moves_from():
 
     set_board(board1)
     assert possible_moves_from((0, 3)) == []
-    assert possible_moves_from((1, 2)) = ['up', 'left']
-    assert possible_moves_from((2, 1)) = ['up', 'left']
-    assert possible_moves_from((3, 1)) = ['right', 'left', 'down']
-    assert possible_moves_from((4, 3)) = ['up', 'left', 'right']
-    assert possible_moves_from((2, 2)) = ['up', 'down', 'left', 'right']
+    assert possible_moves_from((1, 2)) == ['up', 'left']
+    assert possible_moves_from((2, 1)) == ['up', 'left']
+    assert possible_moves_from((3, 1)) == ['right', 'left', 'down']
+    assert possible_moves_from((4, 3)) == ['up', 'left', 'right']
+    assert possible_moves_from((2, 2)) == ['up', 'down', 'left', 'right']
 
 def test_is_legal_location():
     assert is_legal_location((0, 0)) == True
@@ -191,3 +191,5 @@ def test_choose_computer_move():
 def test_is_enemy_win():
     # Replace with tests
     assert is_enemy_win() == True or is_enemy_win() == False
+
+
