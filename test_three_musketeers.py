@@ -151,6 +151,8 @@ def test_is_legal_move():
     for i in range(4):
         for j in range(4):
             assert(type(is_legal_move((0, 0), 'left')), bool)
+            # TODO
+            # fix
 
 def test_can_move_piece_at():
     # Replace with tests
