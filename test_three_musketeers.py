@@ -8,6 +8,7 @@ down = 'down'
 M = 'M'
 R = 'R'
 _ = '-'
+poss_str = ['M', 'R', '-']
 
 board1 =  [ [_, _, _, M, _],
             [_, _, R, M, _],
@@ -22,6 +23,21 @@ def test_create_board():
     create_board()
     assert at((0,0)) == R
     assert at((0,4)) == M
+    assert at((0,1)) == R
+    assert at((0,2)) == R
+    assert at((1,1)) == R
+    assert at((2,1)) == R
+    assert at((3,1)) == R
+    assert at((4,1)) == R
+    assert at((0,1)) == str(at((0,1)))
+    for i in range(4):
+        for j in range(4):
+            assert at((i, j)) == str(at((i, j)))
+    for i in range(4):
+        for j in range(4):
+            assert at((i, j)) in poss_str
+    
+    
     #eventually add at least two more test cases
 
 def test_set_board():
@@ -34,6 +50,17 @@ def test_set_board():
 def test_get_board():
     set_board(board1)
     assert board1 == get_board()
+    for item in get_board():
+        for i in range(4):
+            assert item[i] == str(item[i])
+            
+    for item in board1:
+        for i in range(4):
+            assert item[i] in poss_str
+            
+    for item in get_board():
+        for i in range(4):
+            assert item[i] in poss_str
     #eventually add at least one more test with another board
 
 def test_string_to_location():
@@ -62,7 +89,13 @@ def test_location_to_string():
 def test_at():
 
     assert at((1, 2)) == 'R'
-    assert at((1, 3)) == M
+    assert at((0, 4)) == M
+    with pytest.raises(ValueError):
+        at((1,2)) == int(at((1,2)))
+        
+    with pytest.raises(ValueError):
+        at((1,2)) == int(at((4,2)))
+    
 
 def test_all_locations():
 
@@ -105,16 +138,19 @@ def test_is_legal_move_by_enemy():
 def test_is_legal_move():
     # Replace with tests
     set_board(board1)
-    with pytest.raises(ValueError):
-        is_legal_move((2, 5), 'right')
-    with pytest.raises(ValueError):
-        is_legal_move((6, 5), 'up')
-    assert is_legal_move((0, 3), 'left') == True
+   # with pytest.raises(ValueError):
+   #     is_legal_move((2, 5), 'right')
+   # with pytest.raises(ValueError):
+   #     is_legal_move((6, 5), 'up')
+    assert is_legal_move((0, 3), 'left') == False
     assert is_legal_move((0, 3), 'up') == False
     assert is_legal_move((1, 3), 'left') == True
-    assert is_legal_move((1, 3), 'right') == True
+    assert is_legal_move((1, 3), 'right') == False
     assert is_legal_move((4, 2), 'down') == False
-    assert is_legal_move((2, 4), 'up') == True
+    assert is_legal_move((2, 4), 'up') == False
+    for i in range(4):
+        for j in range(4):
+            assert(type(is_legal_move((0, 0), 'left')), bool)
 
 def test_can_move_piece_at():
     # Replace with tests
@@ -191,5 +227,3 @@ def test_choose_computer_move():
 def test_is_enemy_win():
     # Replace with tests
     assert is_enemy_win() == True or is_enemy_win() == False
-
-

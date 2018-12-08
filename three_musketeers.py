@@ -233,7 +233,6 @@ def possible_moves_from(location):
 
 def is_legal_location(location):
     """ Tests if the location is legal on a 5x5 board.
-
         You can assume that input will be a pair of integer numbers."""
     row, column = location
     if row < 0 or row > 4:
@@ -300,6 +299,28 @@ def choose_computer_move(who):
        You can assume that input will always be in correct range."""
 
     poss_moves = all_possible_moves_for(who)
+
+    # Strategies for R
+    # if who = R
+    # get all the possible moves for the opponent
+    # if majority of the musketeers is on one side, for example if
+    # m1 is at (0, 1), m2 is at (2, 4) and m3 is at (3, 3)
+    # look for moves for R that are exactly to the left of M
+    # to limit their choices and make them move right
+    # priority should be given to the one that is furthest from the rest
+    ####
+    # if this is not possible, look for possible moves for r 
+    # so he has an option to move to one side
+    # priority should again be given to the one furthest from the rest
+    # to bring them all closer to each other
+    ###
+    # if the above is not possible
+    # r should try to move closer to the furthest one away from the rest
+    # to give him an option to move to the rest
+
+    
+
+    #Strategies for M
 
     return random.choice(poss_moves)
 
