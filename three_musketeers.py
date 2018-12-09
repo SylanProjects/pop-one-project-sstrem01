@@ -86,8 +86,13 @@ def all_locations_for_m():
             m.append(element)
     return m
 
-
-
+def all_locations_for_r():
+    all_loc = all_locations()
+    r = []
+    for element in all_loc:
+        if at(element) == 'R':
+            r.append(element)
+    return r
 
 
 def adjacent_location(location, direction):
@@ -291,6 +296,59 @@ def make_move(location, direction):
     board[row][column] = curr_contents
     board[location[0]][location[1]] = '-'
 
+def r_strategy():
+    poss_moves = all_possible_moves_for('R')
+    poss_moves_m = all_possible_moves_for('M')
+    m_locs = all_locations_for_m()
+
+    for item in m_locs:
+        print(item)
+
+    """ Strategies for R
+     if who = R
+     get all the possible moves for the opponent
+     if majority of the musketeers is on one side, for example if
+     m1 is at (0, 1), m2 is at (2, 4) and m3 is at (3, 3)
+     look for moves for R that are exactly to the left of M
+     to limit their choices and make them move right
+     priority should be given to the one that is furthest from the rest
+    ###
+     if this is not possible, look for possible moves for r
+     so he has an option to move to one side
+     priority should again be given to the one furthest from the rest
+     to bring them all closer to each other
+
+     if the above is not possible
+     r should try to move closer to the furthest one away from the rest
+     to give him an option to move to the rest """
+
+
+
+
+
+    return random.choice(poss_moves)
+
+def s_strategy():
+    poss_moves = all_possible_moves_for('M')
+    return random.choice(poss_moves)
+
+    """
+    Strategies for M
+    Stay as far away from each other as possible:
+    goes through each position vertically and horizontally
+    for example, if one of the Ms(M1) is in the same row as the other(M2),
+    he should move away in the opposite direction that the third (M3) is
+    to make sure that they are not close to each other.
+    Who moves should be decided based on the position of the M
+    For example if M1 is on (0, 0), M2 is on (0, 1) and m3 is on (1, 4)
+    M4 should move down if possible, if not, M2 should move to the right
+    if possible to move them away from each other
+     
+    If that's not possible, he should move only if his new position won't put him
+    in the same row as the third (M3)
+    Otherwise, someone else should move
+    """
+
 
 def choose_computer_move(who):
     """The computer chooses a move for a Musketeer (who = 'M') or an
@@ -298,31 +356,11 @@ def choose_computer_move(who):
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
 
-    poss_moves = all_possible_moves_for(who)
+    if who == 'R':
+        return r_strategy()
+    else:
+        return m_strategy()
 
-    # Strategies for R
-    # if who = R
-    # get all the possible moves for the opponent
-    # if majority of the musketeers is on one side, for example if
-    # m1 is at (0, 1), m2 is at (2, 4) and m3 is at (3, 3)
-    # look for moves for R that are exactly to the left of M
-    # to limit their choices and make them move right
-    # priority should be given to the one that is furthest from the rest
-    ####
-    # if this is not possible, look for possible moves for r 
-    # so he has an option to move to one side
-    # priority should again be given to the one furthest from the rest
-    # to bring them all closer to each other
-    ###
-    # if the above is not possible
-    # r should try to move closer to the furthest one away from the rest
-    # to give him an option to move to the rest
-
-    
-
-    #Strategies for M
-
-    return random.choice(poss_moves)
 
 
 def is_enemy_win():

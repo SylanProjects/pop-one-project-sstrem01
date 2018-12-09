@@ -36,8 +36,8 @@ def test_create_board():
     for i in range(4):
         for j in range(4):
             assert at((i, j)) in poss_str
-    
-    
+
+
     #eventually add at least two more test cases
 
 def test_set_board():
@@ -53,11 +53,11 @@ def test_get_board():
     for item in get_board():
         for i in range(4):
             assert item[i] == str(item[i])
-            
+
     for item in board1:
         for i in range(4):
             assert item[i] in poss_str
-            
+
     for item in get_board():
         for i in range(4):
             assert item[i] in poss_str
@@ -92,10 +92,10 @@ def test_at():
     assert at((0, 4)) == M
     with pytest.raises(ValueError):
         at((1,2)) == int(at((1,2)))
-        
+
     with pytest.raises(ValueError):
         at((1,2)) == int(at((4,2)))
-    
+
 
 def test_all_locations():
 
@@ -116,7 +116,6 @@ def test_adjacent_location():
 
 
 
-
 def test_is_legal_move_by_musketeer():
     set_board(board1)
     assert is_legal_move_by_musketeer((0, 3), 'left') == False
@@ -124,7 +123,7 @@ def test_is_legal_move_by_musketeer():
     assert is_legal_move_by_musketeer((1, 3), 'left') == True
     assert is_legal_move_by_musketeer((1, 3), 'right') == False
     assert is_legal_move_by_musketeer((2, 2), 'down') == False
-    assert is_legal_move_by_musketeer((2, 2), 'down') == True
+
 
 def test_is_legal_move_by_enemy():
     set_board(board1)
@@ -150,18 +149,24 @@ def test_is_legal_move():
     assert is_legal_move((2, 4), 'up') == False
     for i in range(4):
         for j in range(4):
-            assert(type(is_legal_move((0, 0), 'left')), bool)
-            # TODO
-            # fix
+            obj = is_legal_move((i, j), 'up')
+            assert isinstance(obj, bool)
+
 
 def test_can_move_piece_at():
     # Replace with tests
     set_board(board1)
     assert can_move_piece_at((0, 3)) == False
-    assert can_move_piece_at((1, 2)) == False
+    assert can_move_piece_at((1, 2)) == True
     assert can_move_piece_at((1, 3)) == True
-    assert can_move_piece_at((4, 3)) == False
-    assert can_move_piece_at((3, 1)) == False
+    assert can_move_piece_at((4, 3)) == True
+    assert can_move_piece_at((3, 1)) == True
+    assert can_move_piece_at((3, 0)) == False
+    assert can_move_piece_at((34, 1)) == False
+    for i in range(4):
+        for j in range(4):
+            obj = can_move_piece_at((i, j))
+            assert isinstance(obj, bool)
 
 def test_has_some_legal_move_somewhere():
     set_board(board1)
