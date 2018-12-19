@@ -296,13 +296,49 @@ def make_move(location, direction):
     board[row][column] = curr_contents
     board[location[0]][location[1]] = '-'
 
+def compare_m():
+    m_locs = all_locations_for_m()
+    positions = []
+
+    if m_locs[0][0] == m_locs[1][0]:
+        positions.append(m_locs[0][0])
+    if m_locs[0][0] == m_locs[2][0]:
+        positions.append(m_locs[0][0])
+    if m_locs[1][0] == m_locs[2][0]:
+        positions.append(m_locsp[1][0])
+
 def r_strategy():
     poss_moves = all_possible_moves_for('R')
     poss_moves_m = all_possible_moves_for('M')
     m_locs = all_locations_for_m()
 
-    for item in m_locs:
-        print(item)
+#    for item in m_locs:
+#        print(item)
+#
+#    for i in range(2):
+#        print(m_locs[i][0])
+"""
+    LOOK FOR M POSITIONS THAT ARE EITHER IN THE SAME ROW OR COLUMN (BOOLEAN)
+
+    IF TRUE
+        LOOK FOR THE R THAT ARE AROUND THEM
+        IF WHEN YOU MOVE THAT R THE AMOUNT OF POSSIBLE MOVES GETS LOWER FOR M
+            MOVE TO THAT POSITION
+        IF IT GETS BIGGER
+            GO THROUGH THE NEXT ONE
+        DO THE SAME FOR EACH POSITION UNTIL FINDING THE BEST
+        IF SAME POSITIONS LOWER THE AMOUNT OF POSSIBLE M MOVES
+            PICK THE ONE THAT WILL BE THE FURTHEST AWAY FROM THE MUSKETEERS
+        IF ALL ELSE FAILS
+            PICK RANDOMLY
+
+
+"""
+
+
+
+
+
 
     """ Strategies for R
      if who = R
@@ -328,9 +364,42 @@ def r_strategy():
 
     return random.choice(poss_moves)
 
-def s_strategy():
+def m_strategy():
     poss_moves = all_possible_moves_for('M')
     return random.choice(poss_moves)
+
+
+    """
+     RETURN TRUE IF TWO POSITIONS ARE THE SAME
+     IF TRUE
+         RETURN THE TWO POSITIONS
+         IF THERE ARE MORE PAIRS
+         SAVE THEM AND GO THROUGH THE FIRST PAIR
+
+         LOOK FOR MOVES IN THE FIRST POSITIONS AND RETURN TRUE
+         IF NO MOVES CARRY ON
+         IF MOVES: LOOK WHAT WILL BE THE OUTCOME
+            IF TWO POSITIONS WONT BE THE SAME AGAIN
+            SAVE THAT POSITION
+
+        DO THE SAME FOR THE SECOND POSITION
+
+        PICK THE BEST POSITION
+        IF IT WILL HAVE MORE MOVES THEN CHOOSE THAT POSITION
+
+        IF THEY WILL HAVE THE SAME AMOUNT OF MOVES
+            LOOK WHICH ONES WILL BE BETTER
+            FOR EXAMPLE DONT INCLUDE THE SAME POSITIONS THAT ARE OCCUPIED BY OTHER MUSKETEER
+            IF ALL ELSE FAILS
+                CHOOSE RANDOMLY
+    DO THE SAME FOR A DIFFERENT SET OF TWO POSITIONS
+    AFTER SAVING ALL THE POSITIONS LOOK WHICH ONE WILL BE THE BEST
+    (SAME AS ABOVE)
+    MOVE IN THAT POSITION
+
+
+
+"""
 
     """
     Strategies for M
@@ -343,7 +412,7 @@ def s_strategy():
     For example if M1 is on (0, 0), M2 is on (0, 1) and m3 is on (1, 4)
     M4 should move down if possible, if not, M2 should move to the right
     if possible to move them away from each other
-     
+
     If that's not possible, he should move only if his new position won't put him
     in the same row as the third (M3)
     Otherwise, someone else should move
