@@ -296,21 +296,13 @@ def make_move(location, direction):
     board[row][column] = curr_contents
     board[location[0]][location[1]] = '-'
 
-def compare_m():
-    m_locs = all_locations_for_m()
-    positions = []
 
-    if m_locs[0][0] == m_locs[1][0]:
-        positions.append(m_locs[0][0])
-    if m_locs[0][0] == m_locs[2][0]:
-        positions.append(m_locs[0][0])
-    if m_locs[1][0] == m_locs[2][0]:
-        positions.append(m_locsp[1][0])
 
 def r_strategy():
     poss_moves = all_possible_moves_for('R')
     poss_moves_m = all_possible_moves_for('M')
     m_locs = all_locations_for_m()
+    return random.choice(poss_moves)
 
 #    for item in m_locs:
 #        print(item)
@@ -333,14 +325,14 @@ def r_strategy():
             PICK RANDOMLY
 
 
-"""
 
 
 
 
 
 
-    """ Strategies for R
+
+     Strategies for R
      if who = R
      get all the possible moves for the opponent
      if majority of the musketeers is on one side, for example if
@@ -362,10 +354,67 @@ def r_strategy():
 
 
 
-    return random.choice(poss_moves)
+
+
+def check_for_m_positions():
+    """
+    This function returns true or false if there are two musketeers in the same row or column.
+    It does not return the positions of these two musketeers
+    """
+    m_locs = all_locations_for_m()
+    for i in range(2):
+        if m_locs[0][i] == m_locs[1][i]:
+            return True
+        if m_locs[0][i] == m_locs[2][i]:
+            return True
+        if m_locs[1][i] == m_locs[2][i]:
+            return True
+    return False
+
+
+
+def get_m_same_row():
+    """
+    This function returns all positions where two musketeers ar
+    e
+    in the same row or column.
+    """
+    m_locs = all_locations_for_m()
+    positions = []
+    for i in range(2):
+        if m_locs[0][i] == m_locs[1][i]:
+            positions.append([m_locs[0], m_locs[1]])
+        if m_locs[0][i] == m_locs[2][i]:
+            positions.append([m_locs[0], m_locs[2]])
+        if m_locs[1][i] == m_locs[2][i]:
+            positions.append([m_locs[1], m_locs[2]])
+
+    return positions
+
 
 def m_strategy():
     poss_moves = all_possible_moves_for('M')
+
+
+    if check_for_m_positions():
+        positions = get_m_same_row()
+        print(positions)
+
+        for item in positions:
+            print(item)
+            moves = possible_moves_from(item[0])
+            """
+            for each position in moves
+            if there is musketeers already in that column or row
+                go through the next one
+                save positions that wont put the musketeer in the same r/c
+
+            if there are few positions
+                choose the one that will put the M furthest away from others
+            if there are no saved positions
+                choose the one that will put the M furthest away from others  
+            """
+
     return random.choice(poss_moves)
 
 
@@ -399,9 +448,6 @@ def m_strategy():
 
 
 
-"""
-
-    """
     Strategies for M
     Stay as far away from each other as possible:
     goes through each position vertically and horizontally
@@ -424,6 +470,8 @@ def choose_computer_move(who):
        enemy (who = 'R') and returns it as the tuple (location, direction),
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
+    #if check_for_m_positions():
+
 
     if who == 'R':
         return r_strategy()
