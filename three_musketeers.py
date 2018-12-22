@@ -394,16 +394,108 @@ def get_m_same_row():
 
 def m_strategy():
     poss_moves = all_possible_moves_for('M')
+    all_m_locs = all_locations_for_m()
+
+    # List of new positions in order:
+    # "1" positions is higher priority than 2 or 3 etc.
+    new_pos_1 = []
+    new_pos_2 = []
+
+    # Each function will try to sort possible moves in terms of priority
+    # to pick the best move possible
 
 
+
+
+    # First, check if two or more Musketeers are in the same row or column
+    # If they are, they should first try to move away from each other
     if check_for_m_positions():
         positions = get_m_same_row()
-        print(positions)
+        #print(positions)
 
-        for item in positions:
-            print(item)
-            moves = possible_moves_from(item[0])
-            """
+        # Go through each pair
+        for pair in positions:
+            #print(pair)
+            # Show possible moves from first position
+            # Go through each location in the pair
+            for location in pair:
+                moves = possible_moves_from(location)
+                #print(moves)
+
+                # Consider each direction that the Musketeer can move in
+                # and sort them into high priority and low priority
+                # Direction is high priority if it won't be in the
+                # same column or row as the two other Musketeers
+                for direction in moves:
+                    new_pos = adjacent_location(location, direction)
+                    #print(new_pos)
+                    high_priority = True # default
+
+                    # Look if other Musketeers would be in the same
+                    # row or column as the Musketeer in the new position (new_pos)
+                    for item in [x for x in all_m_locs if x != location]:
+                                # (Ignores the Musketeer we're trying to move)
+
+                        #print(item)
+                        if item[0] == new_pos[0] or item[1] == new_pos[1]:
+                            new_pos_2.append((location, direction))
+                            high_priority = False
+                            break
+                        else:
+                            high_priority = True
+                    if high_priority:
+                        new_pos_1.append((location, direction))
+
+    # To avoid going through each list with possible new positions
+    skip = False
+
+    if len(new_pos_1) == 1:
+        return new_pos_1[0]
+    if len(new_pos_1) == 0 and len(new_pos_2) == 1:
+        return new_pos_2[0]
+
+    if len(new_pos_1) > 1:
+        skip = True
+        for move in new_pos_1:
+            print("move", move)
+                                        # location, direction
+            new_pos = adjacent_location(move[0], move[1])
+            #for musk in [x for x in all_m_locs if x != move[0]]:
+            #    print("musk", musk)
+            curr_musks = [x for x in all_m_locs if x != move[0]]
+
+            # Check if the new position will put the musketeer away from others
+            if new_pos[0] > curr_musks[0][0] and new_pos[0] > curr_musks[1][0]:
+
+                # Check if the new position will be in the same row or column as the
+                # other Musketeers 
+
+                return move[0], move[1]
+            elif new_pos[0] < curr_musks[0][0] and new_pos[0] < curr_musks[1][0]:
+                return move[0], move[1]
+            elif new_pos[1] > curr_musks[0][1] and new_pos[1] > curr_musks[1][1]:
+                return move[0], move[1]
+            elif new_pos[1] < curr_musks[0][1] and new_pos[1] < curr_musks[1][1]:
+                return move[0], move[1]
+
+
+
+
+    print("First positions:")
+    i = 0
+    for item in new_pos_1:
+        print(item, i)
+        i += 1
+    i = 0
+    for item in new_pos_2:
+        print(item, i)
+        i += 1
+
+
+
+
+
+    """
             for each position in moves
             if there is musketeers already in that column or row
                 go through the next one
@@ -412,8 +504,8 @@ def m_strategy():
             if there are few positions
                 choose the one that will put the M furthest away from others
             if there are no saved positions
-                choose the one that will put the M furthest away from others  
-            """
+                choose the one that will put the M furthest away from others
+    """
 
     return random.choice(poss_moves)
 
