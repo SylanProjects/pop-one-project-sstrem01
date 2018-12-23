@@ -391,6 +391,21 @@ def get_m_same_row():
 
     return positions
 
+def not_in_same_rc(old_pos, new_pos):
+
+    """ This function return true if the Musketeers are not in the same
+    row or column.
+    "rc" in the name stands for Row and Column.
+    """
+    all_m_locs = all_locations_for_m()
+    other_musketeers = [x for x in all_m_locs if x != old_pos]
+
+
+    if other_musketeers[0][0] == other_musketeers[1][0] == new_pos[0]:
+        return False
+    elif other_musketeers[0][1] == other_musketeers[1][1] == new_pos[1]:
+        return False
+    return True
 
 def m_strategy():
     poss_moves = all_possible_moves_for('M')
@@ -464,20 +479,20 @@ def m_strategy():
             #    print("musk", musk)
             curr_musks = [x for x in all_m_locs if x != move[0]]
 
-            # Check if the new position will put the musketeer away from others
-            if new_pos[0] > curr_musks[0][0] and new_pos[0] > curr_musks[1][0]:
 
-                # Check if the new position will be in the same row or column as the
-                # other Musketeers 
+            # Check if the new position will be in the same row or column as the
+            # other Musketeer
+            if not_in_same_rc(move[0], new_pos):
+                # Check if the new position will put the musketeer away from others
 
-                return move[0], move[1]
-            elif new_pos[0] < curr_musks[0][0] and new_pos[0] < curr_musks[1][0]:
-                return move[0], move[1]
-            elif new_pos[1] > curr_musks[0][1] and new_pos[1] > curr_musks[1][1]:
-                return move[0], move[1]
-            elif new_pos[1] < curr_musks[0][1] and new_pos[1] < curr_musks[1][1]:
-                return move[0], move[1]
+                # "c"  stands for "condition"
+                c1 = new_pos[0] > curr_musks[0][0] and new_pos[0] > curr_musks[1][0]
+                c2 = new_pos[0] < curr_musks[0][0] and new_pos[0] < curr_musks[1][0]
+                c3 = new_pos[1] > curr_musks[0][1] and new_pos[1] > curr_musks[1][1]
+                c4 = new_pos[1] < curr_musks[0][1] and new_pos[1] < curr_musks[1][1]
 
+                if c1 or c2 or c3 or c4:
+                    return move[0], move[1]
 
 
 
@@ -575,11 +590,9 @@ def choose_computer_move(who):
 def is_enemy_win():
     """Returns True if all 3 Musketeers are in the same row or column."""
     m = all_locations_for_m()
-    if m[0][0] == m[1][0]:
-        if m[1][0] == m[2][0]:
+    if m[0][0] == m[1][0] == m[2][0]:
             return True
-    elif m[0][1] == m[1][1]:
-        if m[1][1] == m[2][1]:
+    elif m[0][1] == m[1][1] == m[2][1]:
             return True
     else:
         return False
