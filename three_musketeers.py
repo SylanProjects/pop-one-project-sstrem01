@@ -296,25 +296,84 @@ def make_move(location, direction):
     board[row][column] = curr_contents
     board[location[0]][location[1]] = '-'
 
+def check_sides():
+    """
+    Input: None
+    Return: A list
+    This function returns a list of the best directions that the R should move to
+    """
+    m_locs = all_locations_for_m()
+    sorted_directions = []
+
+
+    for location in m_locs:
+        other_musketeers = [x for x in m_locs if x != location]
+
+
+
+
+        # Furthest to the top
+        if location[0] <= other_musketeers[0][0] and location[0] <= other_musketeers[1][0]:
+            top = location
+            print("top", top)
+
+        # Furthest to the bottom
+        if location[0] >= other_musketeers[0][0] and location[0] >= other_musketeers[1][0]:
+            bottom = location
+            print("bottom", bottom)
+
+        # Furthest to the left
+        if location[1] <= other_musketeers[0][1] and location[1] <= other_musketeers[1][1]:
+            left = location
+            print("left", left)
+
+        # Furthest to the right
+        if location[1] >= other_musketeers[0][1] and location[1] >= other_musketeers[1][1]:
+            right = location
+            print("right", right)
+
+    #print(top, bottom, left, right)
+
+    return sorted_directions
 
 
 def r_strategy():
     poss_moves = all_possible_moves_for('R')
     poss_moves_m = all_possible_moves_for('M')
     m_locs = all_locations_for_m()
-    return random.choice(poss_moves)
+
+    print(len(poss_moves_m))
+    #print(poss_moves_m)
+    check_sides()
+
+
+
+
+
 
     """
+    First they should try to move in the same direction
+
+    As soon as there is no Musketeers on one of the sides, they should move in opposite direction
+
+    When there is less musketeers on either direction, R should move in the opposite direction
+    However if two of the musketeers are on one side, all R should try to block their way
+    from spreading out and move into that side. They should also try to get the other musketeer
+    to move in that direction.
+
+
+
+
     r has to move around so that m is blocked at each end of the board and THEN
     work on the middle m
-    """
+
 
 #    for item in m_locs:
 #        print(item)
 #
 #    for i in range(2):
 #        print(m_locs[i][0])
-"""
+
     LOOK FOR M POSITIONS THAT ARE EITHER IN THE SAME ROW OR COLUMN (BOOLEAN)
 
     IF TRUE
@@ -345,7 +404,7 @@ def r_strategy():
      look for moves for R that are exactly to the left of M
      to limit their choices and make them move right
      priority should be given to the one that is furthest from the rest
-    ###
+     ###
      if this is not possible, look for possible moves for r
      so he has an option to move to one side
      priority should again be given to the one furthest from the rest
@@ -353,16 +412,19 @@ def r_strategy():
 
      if the above is not possible
      r should try to move closer to the furthest one away from the rest
-     to give him an option to move to the rest """
+     to give him an option to move to the rest
+     """
 
 
-
-
+    return random.choice(poss_moves)
 
 
 
 def check_for_m_positions():
     """
+    Input: None
+    Output: boolean value
+
     This function returns true or false if there are two musketeers in the same row or column.
     It does not return the positions of these two musketeers
     """
@@ -380,8 +442,10 @@ def check_for_m_positions():
 
 def get_m_same_row():
     """
-    This function returns all positions where two musketeers ar
-    e
+    Input: None
+    Output: a list(with tuple positions)
+
+    This function returns all positions where two musketeers are
     in the same row or column.
     """
     m_locs = all_locations_for_m()
@@ -398,7 +462,11 @@ def get_m_same_row():
 
 def not_in_same_rc(old_pos, new_pos):
 
-    """ This function return true if the Musketeers are not in the same
+    """
+    Input: tuple(old position), tuple(possible position)
+    Output: boolean value
+
+    This function returns true if all three Musketeers are not in the same
     row or column.
     "rc" in the name stands for Row and Column.
     """
@@ -414,7 +482,11 @@ def not_in_same_rc(old_pos, new_pos):
 
 def other_m_not_in_same_rc(old_pos, new_pos):
 
-    """ This function returns True if one of the Musketeers will be in the same
+    """
+    Input: tuple(old position), tuple(possible position)
+    Output: boolean value
+
+    This function returns True if one of the Musketeers will be in the same
     row or column.
     "rc" in the name stands for Row and Column.
     """
@@ -423,57 +495,70 @@ def other_m_not_in_same_rc(old_pos, new_pos):
     other_musketeers = [x for x in all_m_locs if x != old_pos]
 
     # First musketeer
-    c1 = other_musketeers[0][0] == new_pos[0]
-    c2 = other_musketeers[1][0] == new_pos[0]
+    c1 = new_pos[0] == other_musketeers[0][0]
+    c2 = new_pos[0] == other_musketeers[1][0]
     # Second musketeer
-    c3 = other_musketeers[0][1] == new_pos[1]
-    c4 = other_musketeers[1][1] == new_pos[1]
-
+    c3 = new_pos[1] == other_musketeers[0][1]
+    c4 = new_pos[1] == other_musketeers[1][1]
     if c1 or c2 or c3 or c4:
         return False
     else:
         return True
 
 
+def choose_best_move(positions):
+    """
+    Input: a list with positions
+    Return: tuple(one position)
+
+    This function chooses the best move from the input list,
+    sorts it into three priorities and returns the best one.
 
 
-def check_if_other_m_rc(positions):
-
-    # This function checks if other muskeeters will be in the same
-    # row or column and returns a move that will not
-
+    First condition is that it checks if the new position will move the Musketeer
+    away from the others, if it does it appends it into the first list and goes
+    to the beginning of the loop.
+    Second condition is that it checks if this move will not put the Musketeer
+    in the same row or column as other Musketeer by using other_m_not_in_same_rc function.
+    If it does not meet the first and second condition, it will look if the move
+    at least does not put the Musketeers in a losing position.
+    """
 
 
     priority_1 = []
     priority_2 = []
+    priority_3 = []
 
     all_m_locs = all_locations_for_m()
     for move in positions:
-        #print("not random", move)
                                     # location, direction
         new_pos = adjacent_location(move[0], move[1])
         curr_musks = [x for x in all_m_locs if x != move[0]]
 
-        # Check if the new position will be in the same row or column as the
-        # other Musketeer
-
-        c1 = new_pos[0] > curr_musks[0][0] and new_pos[0] > curr_musks[1][0]
-        c2 = new_pos[0] < curr_musks[0][0] and new_pos[0] < curr_musks[1][0]
-        c3 = new_pos[1] > curr_musks[0][1] and new_pos[1] > curr_musks[1][1]
-        c4 = new_pos[1] < curr_musks[0][1] and new_pos[1] < curr_musks[1][1]
-
-        if (c1 or c2) and (c3 or c4):
+        if move_away(move[0], new_pos):
             priority_1.append((move[0], move[1]))
             continue
-        elif c1 or c2 or c3 or c4:
+        elif other_m_not_in_same_rc(move[0], new_pos):
             priority_2.append((move[0], move[1]))
+        elif not_in_same_rc(move[0], new_pos):
+            priority_3.append((move[0], move[1]))
+
+
+            """
+            If there are any moves in the highest priority list, it sorts them again
+            in a similar manner as above; by looking if it won't put it in the same row
+            or column as other muskeeters.
+
+            If there isn't anything in the highest priority, a random move is returned
+            from the other two lists.
+            """
 
 
     if len(priority_1) >= 1:
         pr_1 = []
         pr_2 = []
-        for item in priority_1:
 
+        for item in priority_1:
             if other_m_not_in_same_rc(item[0], adjacent_location(item[0], item[1])):
                 return item
             elif not_in_same_rc(item[0], adjacent_location(item[0], item[1])):
@@ -487,241 +572,158 @@ def check_if_other_m_rc(positions):
             return random.choice(pr_2)
 
     elif len(priority_2) >= 1:
-        pr_1 = []
-        pr_2 = []
-        for item in priority_2:
-            if other_m_not_in_same_rc(item[0], adjacent_location(item[0], item[1])):
-                return item
-            elif not_in_same_rc(item[0], adjacent_location(item[0], item[1])):
-                pr_1.append(item)
-            else:
-                pr_2.append(item)
+        return random.choice(priority_2)
+    elif len(priority_3) >= 1:
+        return random.choice(priority_3)
 
-        if len(pr_1) != 0:
-            return random.choice(pr_1)
-        else:
-            return random.choice(pr_2)
 
+        """
+        If all else fails, a random move is returned.
+        """
     else:
         return random.choice(positions)
 
 
 
-def move_away(move, new_pos):
-    # Check if the new position will put all three musketeers away from others
+def move_away(old_pos, new_pos):
+    """
+    Input: tuple(old position), tuple(possible position)
+    Output: boolean value
 
-    # "c"  stands for "condition"
+    Checks if the new position will put all three musketeers away from the others and
+    returns True if it does and False if it doesn't.
+    Old position is needed to make sure that the Musketeer that is supposed to make this move
+    is not taken into consideration which may result in wrong output.
+    """
     all_m_locs = all_locations_for_m()
-    curr_musks = [x for x in all_m_locs if x != move]
-    """
-    check if it will be bigger horizontally AND vertically
-    """
+    curr_musks = [x for x in all_m_locs if x != old_pos]
 
-    c1 = new_pos[0] > curr_musks[0][0] and new_pos[0] > curr_musks[1][0]
-    c2 = new_pos[0] < curr_musks[0][0] and new_pos[0] < curr_musks[1][0]
-    c3 = new_pos[1] > curr_musks[0][1] and new_pos[1] > curr_musks[1][1]
-    c4 = new_pos[1] < curr_musks[0][1] and new_pos[1] < curr_musks[1][1]
+    is_bottom = new_pos[0] > curr_musks[0][0] and new_pos[0] > curr_musks[1][0] # Condition 1
+    is_top = new_pos[0] < curr_musks[0][0] and new_pos[0] < curr_musks[1][0] # Condition 2
+    is_right = new_pos[1] > curr_musks[0][1] and new_pos[1] > curr_musks[1][1] # Condition 3
+    is_left = new_pos[1] < curr_musks[0][1] and new_pos[1] < curr_musks[1][1] # Condition 4
+
+    c1 = is_bottom and new_pos[0] > old_pos[0]
+    c2 = is_top and new_pos[0] < old_pos[0]
+    c3 = is_right and new_pos[1] > old_pos[1]
+    c4 = is_left and new_pos[1] < old_pos[1]
 
     if c1 or c2 or c3 or c4:
-        print("Success: stay away", move)
         return True
     else:
         return False
 
 def m_strategy():
+
+    """
+    Strategies for M
+
+    """
+
+
     poss_moves = all_possible_moves_for('M')
     all_m_locs = all_locations_for_m()
-    #return random.choice(poss_moves)
+    """
+    Return a random location at the start of the game and when the MUSKETEERS
+    are positioned in these two ways:
+    """
+    bttm_top = [(0, 4), (2, 2), (4, 0)]
+    top_bttm = [(0, 0), (2, 2), (4, 4)]
 
-
-    # Return random location at the start of the game.
-    if (((0, 4) and (2, 2) and (4, 0)) or ((0, 0) and (2, 2) and (4, 4))) in all_m_locs:
+    if all(elem in all_m_locs for elem in bttm_top) or all(elem in all_m_locs for elem in top_bttm):
         return random.choice(poss_moves)
 
 
 
-
-    # List of new positions in order:
-    # "1" positions is higher priority than 2 or 3 etc.
+    """
+    List of new positions in order:
+    "1" positions is higher priority than 2 or 3 etc.
+    Each function will try to sort possible moves in terms of priority
+    to pick the best move possible
+    """
     new_pos_1 = []
     new_pos_2 = []
 
-    # Each function will try to sort possible moves in terms of priority
-    # to pick the best move possible
 
-
-
-    # First, check if two or more Musketeers are in the same row or column
-    # If they are, they should first try to move away from each other
+    """
+    First, check if two or more Musketeers are in the same row or column
+    If they are, Musketeers should first try to move away from each other
+    """
     if check_for_m_positions():
         positions = get_m_same_row()
-        #print(positions)
 
         # Go through each pair
         for pair in positions:
-            #print(pair)
             # Show possible moves from first position
             # Go through each location in the pair
             for location in pair:
                 moves = possible_moves_from(location)
-                #print(moves)
+                """
+                Consider each direction that the Musketeer can move in
+                and sort them into high priority and low priority
+                Direction is high priority if it won't be in the
+                same column or row as the two other Musketeers
+                """
 
-                # Consider each direction that the Musketeer can move in
-                # and sort them into high priority and low priority
-                # Direction is high priority if it won't be in the
-                # same column or row as the two other Musketeers
                 for direction in moves:
                     new_pos = adjacent_location(location, direction)
-                    #print(new_pos)
-                    high_priority = True # default
+
 
                     # Look if other Musketeers would be in the same
                     # row or column as the Musketeer in the new position (new_pos)
-                    for item in [x for x in all_m_locs if x != location]:
-                                # (Ignores the Musketeer we're trying to move)
-
-                        #print(item)
-                        if item[0] == new_pos[0] or item[1] == new_pos[1]:
-                            new_pos_2.append((location, direction))
-                            high_priority = False
-                            break
-                        else:
-                            high_priority = True
-                    if high_priority:
+                    if not other_m_not_in_same_rc(location, new_pos):
+                        continue
+                    else:
                         new_pos_1.append((location, direction))
 
-    # To avoid going through each list with possible new positions
-
-    print("first", new_pos_1)
-    print("second", new_pos_2)
-
     """
-    # TODO:
-    if first move, choose randomly
+    If there is only one item in the new_pos_1 or new_pos_2 lists,
+    it can be returned since they have the highest priority.
+    They have highest priority because when two Musketeers are in the
+    same row or column, they should try to get away from each other
+    as soon as possible to avoid getting blocked.
     """
-
     if len(new_pos_1) == 1:
         return new_pos_1[0]
     elif len(new_pos_1) == 0 and len(new_pos_2) == 1:
         return new_pos_2[0]
 
+        """
+        If there are more moves in either list,
+        they should be sorted even more to choose the best move
+        using the function choose_best_move.
+        """
+
     elif len(new_pos_1) > 1:
-        r = check_if_other_m_rc(new_pos_1)
+        r = choose_best_move(new_pos_1)
         if len(r) != 0:
             return r
     elif len(new_pos_2) > 1:
-        r = check_if_other_m_rc(new_pos_2)
+        r = choose_best_move(new_pos_2)
         if len(r) != 0:
             return r
-    elif len(check_if_other_m_rc(poss_moves)) != 0 and check_if_other_m_rc(poss_moves):
-        return check_if_other_m_rc(poss_moves)
+
+
+            """
+            If two musketeers are not in the sam row or column
+            the computer should choose the best move from the
+            list of possible moves.
+            choose_best_move function separates the moves into three
+            further lists and returns only one move.
+            """
+    elif choose_best_move(poss_moves):
+        return choose_best_move(poss_moves)
+
+
+        """
+        If all else fails, return a random move from the list of possible
+        moves.
+        Very rare that this should happen.
+        """
     else:
-        for move in poss_moves:
-            print(move)
-
-    #poss_moves
+        return random.choice(poss_moves)
 
 
-
-        """
-        for move in new_pos_1:
-            print("move", move)
-                                        # location, direction
-            new_pos = adjacent_location(move[0], move[1])
-            curr_musks = [x for x in all_m_locs if x != move[0]]
-
-            # Check if the new position will be in the same row or column as the
-            # other Musketeer
-            if not_in_same_rc(move[0], new_pos):
-                # Check if the new position will put all three musketeers away from others
-
-                # "c"  stands for "condition"
-                c1 = new_pos[0] > curr_musks[0][0] and new_pos[0] > curr_musks[1][0]
-                c2 = new_pos[0] < curr_musks[0][0] and new_pos[0] < curr_musks[1][0]
-                c3 = new_pos[1] > curr_musks[0][1] and new_pos[1] > curr_musks[1][1]
-                c4 = new_pos[1] < curr_musks[0][1] and new_pos[1] < curr_musks[1][1]
-
-                if c1 or c2 or c3 or c4:
-                    return move[0], move[1]
-                    """
-
-
-
-
-
-
-
-
-
-        """
-make him avoid moving into a row or column that is already
-occupied by another musketeer
-
-make them stay away from each other
-    """
-
-
-
-    """
-            for each position in moves
-            if there is musketeers already in that column or row
-                go through the next one
-                save positions that wont put the musketeer in the same r/c
-
-            if there are few positions
-                choose the one that will put the M furthest away from others
-            if there are no saved positions
-                choose the one that will put the M furthest away from others
-    """
-
-    return random.choice(poss_moves)
-
-
-    """
-     RETURN TRUE IF TWO POSITIONS ARE THE SAME
-     IF TRUE
-         RETURN THE TWO POSITIONS
-         IF THERE ARE MORE PAIRS
-         SAVE THEM AND GO THROUGH THE FIRST PAIR
-
-         LOOK FOR MOVES IN THE FIRST POSITIONS AND RETURN TRUE
-         IF NO MOVES CARRY ON
-         IF MOVES: LOOK WHAT WILL BE THE OUTCOME
-            IF TWO POSITIONS WONT BE THE SAME AGAIN
-            SAVE THAT POSITION
-
-        DO THE SAME FOR THE SECOND POSITION
-
-        PICK THE BEST POSITION
-        IF IT WILL HAVE MORE MOVES THEN CHOOSE THAT POSITION
-
-        IF THEY WILL HAVE THE SAME AMOUNT OF MOVES
-            LOOK WHICH ONES WILL BE BETTER
-            FOR EXAMPLE DONT INCLUDE THE SAME POSITIONS THAT ARE OCCUPIED BY OTHER MUSKETEER
-            IF ALL ELSE FAILS
-                CHOOSE RANDOMLY
-    DO THE SAME FOR A DIFFERENT SET OF TWO POSITIONS
-    AFTER SAVING ALL THE POSITIONS LOOK WHICH ONE WILL BE THE BEST
-    (SAME AS ABOVE)
-    MOVE IN THAT POSITION
-
-
-
-    Strategies for M
-    Stay as far away from each other as possible:
-    goes through each position vertically and horizontally
-    for example, if one of the Ms(M1) is in the same row as the other(M2),
-    he should move away in the opposite direction that the third (M3) is
-    to make sure that they are not close to each other.
-    Who moves should be decided based on the position of the M
-    For example if M1 is on (0, 0), M2 is on (0, 1) and m3 is on (1, 4)
-    M4 should move down if possible, if not, M2 should move to the right
-    if possible to move them away from each other
-
-    If that's not possible, he should move only if his new position won't put him
-    in the same row as the third (M3)
-    Otherwise, someone else should move
-    """
 
 
 def choose_computer_move(who):
@@ -729,8 +731,6 @@ def choose_computer_move(who):
        enemy (who = 'R') and returns it as the tuple (location, direction),
        where a location is a (row, column) tuple as usual.
        You can assume that input will always be in correct range."""
-    #if check_for_m_positions():
-
 
     if who == 'R':
         return r_strategy()
