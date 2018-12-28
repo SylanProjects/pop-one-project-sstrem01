@@ -13,6 +13,7 @@
 # 'pass' is a no-nothing Python statement. Replace it with actual code.
 POSSIBLE_CHARACTERS = ["A", "B", "C", "D", "E"]
 import random
+import operator
 def create_board():
     global board
     """Creates the initial Three Musketeers board and makes it globally
@@ -109,7 +110,7 @@ def adjacent_location(location, direction):
         row -= 1
     elif direction == "down":
         row += 1
-    return [row, column]
+    return (row, column)
 
 
 def is_legal_move_by_musketeer(location, direction):
@@ -299,8 +300,10 @@ def make_move(location, direction):
 def check_sides():
     """
     Input: None
-    Return: A list
-    This function returns a list of the best directions that the R should move to
+    Return: A list of tuples
+
+    This function returns a list of tuples of the best directions that the R should move to
+    so they move in one direction.
     """
     m_locs = all_locations_for_m()
     sorted_directions = []
@@ -309,42 +312,117 @@ def check_sides():
     for location in m_locs:
         other_musketeers = [x for x in m_locs if x != location]
 
-
-
-
         # Furthest to the top
         if location[0] <= other_musketeers[0][0] and location[0] <= other_musketeers[1][0]:
             top = location
-            print("top", top)
-
         # Furthest to the bottom
         if location[0] >= other_musketeers[0][0] and location[0] >= other_musketeers[1][0]:
             bottom = location
-            print("bottom", bottom)
-
         # Furthest to the left
         if location[1] <= other_musketeers[0][1] and location[1] <= other_musketeers[1][1]:
             left = location
-            print("left", left)
-
         # Furthest to the right
         if location[1] >= other_musketeers[0][1] and location[1] >= other_musketeers[1][1]:
             right = location
-            print("right", right)
 
-    #print(top, bottom, left, right)
+    """
+    How far from the side it is.
+    The tuple consists of the direction that the R should move into
+    and how far away it is from the other side.
+    """
+
+    sorted_directions.append(("down", top[0], top))
+    sorted_directions.append(("up", 4 - bottom[0], bottom))
+    sorted_directions.append(("right", left[1], left))
+    sorted_directions.append(("left", 4 - right[1], right))
+    sorted_directions.sort(key=lambda x: -x[1])
 
     return sorted_directions
 
+def m_same_direction(direction, old_pos):
+    """
+    Input: a string and a position tuple
+    Return: boolean
+
+    This function checks if the move will unable one of the Musketeers
+    from moving in the same direction as the R.
+    """
+    poss_moves_m = all_possible_moves_for('M')
+
+    for move in poss_moves_m:
+        if adjacent_location(move[0], move[1]) == old_pos:
+            print("Moving:", old_pos, direction)
+            return True
+    return False
+
+
 
 def r_strategy():
+
+    """
+    Input: None
+    Return: a position tuple
+    """
+
     poss_moves = all_possible_moves_for('R')
     poss_moves_m = all_possible_moves_for('M')
     m_locs = all_locations_for_m()
 
-    print(len(poss_moves_m))
+    directions = check_sides()
+    print(directions)
+
+    """
+    Look if there is no gap vertically or horizontally between two musketeers
+    and one of the musketeers is further away from the others.
+
+    """
+
     #print(poss_moves_m)
-    check_sides()
+    #print(poss_moves)
+
+    """
+    Find the best direction that the R should move into.
+    """
+    priority_1 = []
+    priority_2 = []
+    priority_3 = []
+    r_next2m = []
+    for direction in directions:
+        if direction[1] > -1:
+            print(direction)
+            for move in poss_moves:
+                if move[1] == direction[0] and not m_same_direction(direction[0], move[0]):
+                    priority_2.append(move)
+                elif move[1] == direction[0] and m_same_direction(direction[0], move[0]):
+                    r_next2m.append(move)
+
+
+    for move in r_next2m:
+        for direction in directions:
+            if direction[1] > 0:
+                if direction[0] == "up" and move[0][0] >= direction[2][0]:
+                    priority_1.append(move)
+                elif direction[0] == "down" and move[0][0] <= direction[2][0]:
+                    priority_1.append(move)
+                elif direction[0] == "left" and move[0][1] >= direction[2][1]:
+                    priority_1.append(move)
+                elif direction[0] == "right" and move[0][1] <= direction[2][1]:
+                    priority_1.append(move)
+                else:
+                    priority_3.append(move)
+
+
+    #print("First: ", priority_1)
+    #print("Second: ", priority_2)
+    #print("Third: ", priority_3)
+    if len(priority_1) > 0:
+        return random.choice(priority_1)
+    elif len(priority_2) > 0:
+        return random.choice(priority_2)
+    else:
+        return random.choice(priority_3)
+
+
 
 
 
