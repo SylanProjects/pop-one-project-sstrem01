@@ -356,72 +356,199 @@ def m_same_direction(direction, old_pos):
     return False
 
 
+def check_if_touching_m(pos):
+    m_locs = all_locations_for_m()
+    for m in m_locs:
+        #print(m)
+
+        if m[0] == pos[0] and (m[1] == pos[1]+1 or m[1]==pos[1]-1):
+            print("Touching:", m, pos)
+            return True
+        elif m[1] == pos[1] and (m[0] == pos[0]+1 or m[0] == pos[0]-1):
+            print("Touching:", m, pos)
+            return True
+    return False
+
 
 def r_strategy():
 
     """
     Input: None
     Return: a position tuple
+
+    How it chooses the best move:
+
     """
+
 
     poss_moves = all_possible_moves_for('R')
     poss_moves_m = all_possible_moves_for('M')
     m_locs = all_locations_for_m()
 
+    """
+    Variable directions has a list of tuples with (direction(str), how far from the side(int), position(tuple))
+    This is used to guide R to move in the right direction.
+    """
     directions = check_sides()
-    print(directions)
+
+
 
     """
-    Look if there is no gap vertically or horizontally between two musketeers
-    and one of the musketeers is further away from the others.
-
+    The very first thing to check is to see if there are any moves that
+    will make R lose the game and remove them from the list.
     """
+    actual_m_count = []
+    for move in poss_moves_m:
+        actual_m_count.append(adjacent_location(move[0], move[1]))
+    actual_m_count = list(set(actual_m_count)) # convert to set to get rid of duplicates
 
-    #print(poss_moves_m)
-    #print(poss_moves)
+    for move in poss_moves:
+        if len(actual_m_count) <= 1:
+            # Check if that move will allow Musketeer to move
+            t = check_if_touching_m(adjacent_location(move[0], move[1]))
+            if not t:
+                poss_moves.remove(move)
+            elif t:
+                # TODO: find a better way to choose a move instead of the first possible
+                return move
 
-    """
-    Find the best direction that the R should move into.
-    """
+    priority_0 = []
     priority_1 = []
     priority_2 = []
     priority_3 = []
     r_next2m = []
-    for direction in directions:
-        if direction[1] > -1:
-            print(direction)
-            for move in poss_moves:
-                if move[1] == direction[0] and not m_same_direction(direction[0], move[0]):
-                    priority_2.append(move)
-                elif move[1] == direction[0] and m_same_direction(direction[0], move[0]):
-                    r_next2m.append(move)
 
+
+
+    high_d = []
+    if directions[0][1] >= 2:
+        for direction in directions:
+            if direction[1] > 1:
+                high_d.append(direction)
+
+
+
+    """
+    Find the best direction that the R should move into.
+
+    This step looks if any of the moves will unable any Musketeer to
+    move in the opposite direction than the one that R is moving to.
+    """
+
+
+    for direction in directions:
+        for move in poss_moves:
+            if move[1] == direction[0] and not m_same_direction(direction[0], move[0]):
+                priority_2.append(move)
+            elif move[1] == direction[0] and m_same_direction(direction[0], move[0]):
+                r_next2m.append(move)
 
     for move in r_next2m:
-        for direction in directions:
-            if direction[1] > 0:
-                if direction[0] == "up" and move[0][0] >= direction[2][0]:
-                    priority_1.append(move)
-                elif direction[0] == "down" and move[0][0] <= direction[2][0]:
-                    priority_1.append(move)
-                elif direction[0] == "left" and move[0][1] >= direction[2][1]:
-                    priority_1.append(move)
-                elif direction[0] == "right" and move[0][1] <= direction[2][1]:
-                    priority_1.append(move)
-                else:
-                    priority_3.append(move)
+            for direction in directions:
+
+                if direction[1] > 0 and (direction[1] not in high_d):
+                    if direction[0] == "up" and move[0][0] >= direction[2][0]:
+                        priority_1.append(move)
+                    elif direction[0] == "down" and move[0][0] <= direction[2][0]:
+                        priority_1.append(move)
+                    elif direction[0] == "left" and move[0][1] >= direction[2][1]:
+                        priority_1.append(move)
+                    elif direction[0] == "right" and move[0][1] <= direction[2][1]:
+                        priority_1.append(move)
+                    else:
+                        priority_3.append(move)
+
+                elif direction[1] > 0:
+                    if direction[0] == "up" and move[0][0] >= direction[2][0]:
+                        priority_0.append(move)
+                    elif direction[0] == "down" and move[0][0] <= direction[2][0]:
+                        priority_0.append(move)
+                    elif direction[0] == "left" and move[0][1] >= direction[2][1]:
+                        priority_0.append(move)
+                    elif direction[0] == "right" and move[0][1] <= direction[2][1]:
+                        priority_0.append(move)
+                    else:
+                        priority_3.append(move)
 
 
-    #print("First: ", priority_1)
-    #print("Second: ", priority_2)
-    #print("Third: ", priority_3)
+
+
+    """
+    To ADD:
+
+    Look if there is no gap vertically or horizontally between two musketeers
+    and one of the musketeers is further away from the others.
+
+    If most Musketeers are on one side, R should move in their direction.
+
+
+
+    The next step is to make sure that Musketeers are able to move
+    in the prioritised direction. If R is not able to move in a position where it will allow
+    a Muskteer to move in the prioritised direction, it should move in a position
+    where it would allow a Musketeer to move in one of the directions in
+    the "directions" variable.
+
+    """
+
+    priority_1 = list(set(priority_1) - set(priority_3))
+
+    new_d = [x[0] for x in directions if x[1] > 0]
+    new_high_d = [x[0] for x in high_d]
+
+    for element in r_next2m:
+
+        if len(new_d) != 0:
+            if not check_if_touching_m(adjacent_location(element[0], element[1])) and (element[1] not in [x[0] for x in directions if x[1]>0]):
+                priority_1.append(element)
+
+
+    # find positions that the musketeer should be able to move into
+
+    e = []
+    for direction in new_d:
+        for m in m_locs:
+            e.append(adjacent_location(m, direction))
+
+    h_g = []
+    for move in poss_moves_m:
+        if move[1] in new_high_d:
+            h_g.append(adjacent_location(move[0], move[1]))
+    #print("h_g", h_g)
+
+    g = []
+    for move in poss_moves_m:
+        if move[1] in new_d:
+            g.append(adjacent_location(move[0], move[1]))
+
+    z = list(set(e) - set(g))
+
+    for move in poss_moves:
+        if adjacent_location(move[0], move[1]) in z:
+            return move
+
+    h = list(set(e) - set(g))
+    if directions[3][1] != 1:
+        for move in poss_moves:
+            if adjacent_location(move[0], move[1]) in h:
+                return move
+
+    """
+    The last part returns a move from the prioritised lists and
+    if there is no move in any of the list, a random move is returned:
+        possibly a move that will end the game.
+    """
+
+    if len(priority_0) > 0:
+        return random.choice(priority_0)
     if len(priority_1) > 0:
         return random.choice(priority_1)
     elif len(priority_2) > 0:
         return random.choice(priority_2)
-    else:
+    elif len(priority_3) > 0:
         return random.choice(priority_3)
-
+    else:
+        return random.choice(all_possible_moves_for('R'))
 
 
 
