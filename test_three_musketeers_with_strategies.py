@@ -411,6 +411,165 @@ def test_is_enemy_win():
     # Replace with tests
     assert is_enemy_win() == True or is_enemy_win() == False
 
-"""
-The tests with strategies is in the test_three_musketeers_strategies.py
-"""
+
+def test_check_sides():
+    # Make sure that the output is the same as manually written one.
+    set_board(board1)
+    assert check_sides().sort() == [('up', 2, (2, 2)), ('right', 2, (2, 2)),
+    ('left', 1, (1, 3)), ('down', 0, (0, 3))].sort()
+    # Test the type
+    for item in check_sides():
+        assert isinstance(item, tuple)
+    set_board(board2)
+    assert check_sides().sort() == [('right', 1, (4, 1)),
+    ('down', 0, (0, 4)), ('up', 0, (4, 1)), ('left', 0, (0, 4))].sort()
+    for item in check_sides():
+        assert isinstance(item, tuple)
+
+    set_board(board3)
+    assert check_sides().sort() == [('up', 3, (1, 4)),
+    ('right', 2, (1, 2)), ('down', 0, (0, 4)), ('left', 0, (1, 4))].sort()
+    for item in check_sides():
+        assert isinstance(item, tuple)
+
+def test_m_same_direction():
+    set_board(board1)
+
+    assert m_same_direction('right', (2, 3)) == True
+    assert m_same_direction('down', (2, 3)) == True
+    assert m_same_direction('left', (4, 0)) == False
+    set_board(board2)
+    assert m_same_direction('down', (2, 3)) == False
+    assert m_same_direction('down', (3, 2)) == True
+    assert m_same_direction('down', (3, 0)) == True
+    for i in range(4):
+        for j in range(4):
+            assert isinstance(m_same_direction('down', (i, j)), bool)
+
+def test_check_if_touching_m():
+    set_board(board1)
+    assert check_if_touching_m((0, 1)) == False
+    assert check_if_touching_m((1, 2)) == True
+    assert check_if_touching_m((4, 3)) == False
+    assert check_if_touching_m((2, 1)) == True
+    assert check_if_touching_m((2, 3)) == True
+    assert check_if_touching_m((3, 1)) == False
+    # Test the type
+    for i in range(4):
+        for j in range(4):
+            assert isinstance(check_if_touching_m((i, j)), bool)
+    set_board(board3)
+    assert check_if_touching_m((1, 2)) == False
+    assert check_if_touching_m((3, 0)) == False
+    assert check_if_touching_m((4, 2)) == False
+    assert check_if_touching_m((4, 3)) == False
+    assert check_if_touching_m((3, 4)) == False
+
+def test_check_m_direction():
+    # Lists need to be sorted so they are exactly the same
+    # Tests if the function outputs correct results and returns
+    # an error if it doesn't
+    set_board(board1)
+    assert check_m_direction((1, 2)).sort() == ['up', 'left'].sort()
+    assert check_m_direction((2, 3)).sort() == ['down', 'right'].sort()
+    assert check_m_direction((2, 1)).sort() == ['left'].sort()
+    set_board(board2)
+    assert check_m_direction((2, 1)).sort() == ['up'].sort()
+    assert check_m_direction((3, 0)).sort() == ['left'].sort()
+    assert check_m_direction((1, 4)).sort() == ['down'].sort()
+
+def test_high_priority_direction():
+    set_board(board1)
+    assert high_priority_direction(('right', 2, (3, 2)), ((2, 1), 'down')) == True
+    assert high_priority_direction(('right', 2, (3, 2)), ((2, 1), 'down')) == True
+
+def test_r_strategy():
+    # This tests m_strategy and r_strategy
+    boards = [board1, board2]
+    for board in boards:
+        set_board(board)
+        moves = all_possible_moves_for('M') + all_possible_moves_for('R')
+        assert r_strategy() in moves
+        assert m_strategy() in moves
+
+def test_check_for_m_positions():
+    # Test if the function outputs correct results
+    set_board(board1)
+    assert check_for_m_positions() == True
+    set_board(board2)
+    assert check_for_m_positions() == True
+    set_board(board3)
+    assert check_for_m_positions() == True
+    set_board(board5)
+    assert check_for_m_positions() == False
+    # Test the type
+    assert isinstance(check_for_m_positions(), bool)
+
+def test_get_m_same_row():
+    set_board(board1)
+    assert get_m_same_row().sort() == [[(0, 3), (1, 3)]].sort()
+    # Test the type
+    assert isinstance(get_m_same_row(), list)
+
+    set_board(board2)
+    assert get_m_same_row().sort() == [[(3, 1), (4, 1)]].sort()
+    assert isinstance(get_m_same_row(), list)
+
+    set_board(board3)
+    assert get_m_same_row().sort() == [[(1, 2), (1, 4)], [(0, 4), (1, 4)]].sort()
+    assert isinstance(get_m_same_row(), list)
+
+    set_board(board5)
+    assert get_m_same_row().sort() == [].sort()
+    assert isinstance(get_m_same_row(), list)
+
+
+def test_not_in_same_rc():
+    """
+    The rest of the function are very similar therefore the similar tests
+    have been used, however they have been slightly changed to fit the functions.
+    """
+    set_board(board1)
+    assert not_in_same_rc((2, 2), (2, 3)) == False
+    assert not_in_same_rc((2, 2), (2, 1)) == True
+    assert not_in_same_rc((1, 3), (1, 2)) == True
+    set_board(board2)
+    assert not_in_same_rc((3, 1), (3, 0)) == True
+    assert not_in_same_rc((3, 1), (3, 2)) == True
+    assert not_in_same_rc((0, 4), (0, 3)) == True
+
+def test_other_m_not_in_same_rc():
+    set_board(board1)
+    assert other_m_not_in_same_rc((2, 2), (2, 3)) == False
+    assert other_m_not_in_same_rc((2, 2), (2, 1)) == True
+    assert other_m_not_in_same_rc((1, 3), (1, 2)) == False
+    set_board(board2)
+    assert other_m_not_in_same_rc((3, 1), (3, 0)) == True
+    assert other_m_not_in_same_rc((3, 1), (3, 2)) == True
+    assert other_m_not_in_same_rc((0, 4), (0, 3)) == True
+
+def test_move_away():
+    set_board(board1)
+    assert other_m_not_in_same_rc((2, 2), (2, 3)) == False
+    assert isinstance(other_m_not_in_same_rc((2, 2), (2, 3)), bool)
+    assert other_m_not_in_same_rc((2, 2), (2, 1)) == True
+    assert isinstance(other_m_not_in_same_rc((2, 2), (2, 1)), bool)
+    assert other_m_not_in_same_rc((1, 3), (1, 2)) == False
+    set_board(board2)
+    assert other_m_not_in_same_rc((3, 1), (3, 0)) == True
+    assert other_m_not_in_same_rc((3, 1), (3, 2)) == True
+    assert isinstance(other_m_not_in_same_rc((3, 1), (3, 2)), bool)
+    assert other_m_not_in_same_rc((0, 4), (0, 3)) == True
+    assert isinstance(other_m_not_in_same_rc((0, 4), (0, 3)), bool)
+
+def test_choose_best_move():
+    set_board(board1)
+    positions1 = [((0, 4), 'left'), ((0, 4), 'down'),
+    ((1, 2), 'left'), ((1, 2), 'right'), ((1, 2), 'up'),
+    ((1, 2), 'down'), ((4, 0), 'right'), ((4, 0), 'up')]
+    assert choose_best_move(positions1) == ((1, 2), 'down')
+
+    """
+    m_strategy function has been tested in the test_r_strategy function since they
+    are almost exactly the same.
+    """
