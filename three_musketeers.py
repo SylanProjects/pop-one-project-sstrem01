@@ -306,7 +306,7 @@ def r_strategy():
 
 def m_strategy():
 
-    return random.choice(poss_moves)
+    return random.choice(all_possible_moves_for('M'))
 
 
 def choose_computer_move(who):
