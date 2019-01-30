@@ -1,0 +1,22 @@
+Total coursework mark: 19.1  (out of 20)
+
+Exercise sheets mark:  10  (out of 10)
+
+Project mark:  9.1  (out of 10)
+
+Project feedback and mark details
+
+Correctness and adherence to specification: 30%  (out of 30%)
+
+Code runs correctly and adheres to specifications.
+
+Completeness of code, tests, and commit history:  27%    (out of 30%)   
+Tests run but fail on 3 assertions, marks deducted for each of those failed tests. Code is complete methods are implemented and commit history is “healthy”
+
+Coding style: 7%   (out of 10%) 
+
+Some variables are assigned but never used examples at line 256. Otherwise code style is OK.
+
+Extension:  27%     (out of 30%) 
+
+Strategies are  implemented. Extensions work. There are tests provided for the strategies which  fail on 14 assertions.
